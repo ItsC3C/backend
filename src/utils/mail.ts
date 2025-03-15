@@ -2,11 +2,10 @@ import nodemailer from "nodemailer";
 import { EMAIL_USER, EMAIL_PASS } from "../config/env";
 import { mailData } from "../types/mailTypes";
 
-// SMTP-instellingen voor een echte e-mailprovider (zoals Gmail, Outlook, Zoho)
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com", // bijv. smtp.gmail.com of smtp.office365.com
-  port: 587, // Gebruik 465 voor SSL, 587 voor TLS
-  secure: false, // True voor SSL (poort 465), False voor TLS (poort 587)
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASS,
@@ -17,7 +16,7 @@ export const sendEmail = async (data: mailData) => {
   try {
     const info = await transporter.sendMail({
       from: `"Support Team" <${EMAIL_USER}>`,
-      to: data.from_email, // Verstuurt e-mail naar de afzender als bevestiging
+      to: data.from_email,
       subject: `Bedankt voor je bericht, ${data.name}!`,
       html: `
         <!DOCTYPE html>
@@ -91,10 +90,10 @@ export const sendEmail = async (data: mailData) => {
                         ${data.message}
                     </blockquote>
                     <p>Als je dringende vragen hebt, kun je altijd contact met ons opnemen via onze website.</p>
-                    <p><a href="https://jouwwebsite.com" class="button">Ga naar de website</a></p>
+                    <p><a href="google.com" class="button">Ga naar de website</a></p>
                 </div>
                 <div class="footer">
-                    &copy; 2025 Jouw Bedrijf | <a href="https://jouwwebsite.com" style="color: #28a745; text-decoration: none;">Website</a>
+                    &copy; 2025 Jouw Bedrijf | <a href="google.com" style="color: #28a745; text-decoration: none;">Website</a>
                 </div>
             </div>
         </body>
