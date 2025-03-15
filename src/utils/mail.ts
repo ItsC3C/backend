@@ -1,31 +1,109 @@
 import nodemailer from "nodemailer";
-import { EMAIL_USER, EMAIL_PASS, EMAIL_RECEIVE } from "../config/env";
+import { EMAIL_USER, EMAIL_PASS } from "../config/env";
+import { mailData } from "../types/mailTypes";
 
+// SMTP-instellingen voor een echte e-mailprovider (zoals Gmail, Outlook, Zoho)
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smpt.gmail.com", // bijv. smtp.gmail.com of smtp.office365.com
+  port: 587, // Gebruik 465 voor SSL, 587 voor TLS
+  secure: false, // True voor SSL (poort 465), False voor TLS (poort 587)
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASS,
   },
 });
 
-export const sendEmail = async (data: {
-  from_email: string;
-  name: string;
-  subject: string;
-  message: string;
-}) => {
-  const mailOptions = {
-    from: EMAIL_USER,
-    to: EMAIL_RECEIVE,
-    subject: data.subject,
-    html: `
-      <h2>Nieuw Bericht</h2>
-      <p><strong>Naam:</strong> ${data.name}</p>
-      <p><strong>Email:</strong> ${data.from_email}</p>
-      <p><strong>Bericht:</strong> ${data.message}</p>
-    `,
-  };
+export const sendEmail = async (data: mailData) => {
+  try {
+    const info = await transporter.sendMail({
+      from: `"Support Team" <${EMAIL_USER}>`,
+      to: data.from_email, // Verstuurt e-mail naar de afzender als bevestiging
+      subject: `Bedankt voor je bericht, ${data.name}!`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Email Bevestiging</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background: #ffffff;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                .header {
+                    background: #28a745;
+                    color: #ffffff;
+                    text-align: center;
+                    padding: 15px;
+                    font-size: 22px;
+                    font-weight: bold;
+                    border-radius: 10px 10px 0 0;
+                }
+                .content {
+                    padding: 20px;
+                    font-size: 16px;
+                    color: #333;
+                    line-height: 1.5;
+                }
+                .button {
+                    display: inline-block;
+                    background: #28a745;
+                    color: #ffffff;
+                    padding: 12px 20px;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    margin-top: 10px;
+                }
+                .footer {
+                    text-align: center;
+                    font-size: 12px;
+                    color: #666;
+                    margin-top: 20px;
+                }
+                @media (max-width: 600px) {
+                    .container {
+                        width: 95%;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">Bedankt voor je bericht, ${data.name}!</div>
+                <div class="content">
+                    <p>Beste ${data.name},</p>
+                    <p>We hebben je bericht ontvangen en nemen zo snel mogelijk contact met je op.</p>
+                    <p><strong>Je bericht:</strong></p>
+                    <blockquote style="background: #f9f9f9; padding: 10px; border-left: 4px solid #28a745;">
+                        ${data.message}
+                    </blockquote>
+                    <p>Als je dringende vragen hebt, kun je altijd contact met ons opnemen via onze website.</p>
+                    <p><a href="https://jouwwebsite.com" class="button">Ga naar de website</a></p>
+                </div>
+                <div class="footer">
+                    &copy; 2025 Jouw Bedrijf | <a href="https://jouwwebsite.com" style="color: #28a745; text-decoration: none;">Website</a>
+                </div>
+            </div>
+        </body>
+        </html>
+      `,
+    });
 
-  await transporter.sendMail(mailOptions);
+    console.log("✅ E-mail verzonden:", info.messageId);
+  } catch (error) {
+    console.error("❌ Fout bij verzenden e-mail:", error);
+  }
 };
