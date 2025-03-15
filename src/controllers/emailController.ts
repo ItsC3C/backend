@@ -3,13 +3,17 @@ import { sendEmail } from "../utils/mail";
 
 export const handleEmail = async (req: Request, res: Response) => {
   try {
-    const { email, name, subject, message } = req.body;
-    const data = { from_email: email, name, subject, message };
+    const { from_email, name, subject, message } = req.body;
 
-    await sendEmail(data);
-    res.status(200).json({ message: "E-mail succesvol verzonden!" });
+    await sendEmail({ from_email, name, subject, message });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "E-mail succesvol verzonden!" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Fout bij verzenden e-mail" });
+    console.error("❌ Fout bij verzenden e-mail:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Fout bij verzenden e-mail" });
   }
 };
