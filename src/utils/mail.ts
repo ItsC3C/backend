@@ -4,7 +4,7 @@ import { mailData } from "../types/mailTypes";
 
 // SMTP-instellingen voor een echte e-mailprovider (zoals Gmail, Outlook, Zoho)
 const transporter = nodemailer.createTransport({
-  host: "smpt.gmail.com", // bijv. smtp.gmail.com of smtp.office365.com
+  host: "smtp.gmail.com", // bijv. smtp.gmail.com of smtp.office365.com
   port: 587, // Gebruik 465 voor SSL, 587 voor TLS
   secure: false, // True voor SSL (poort 465), False voor TLS (poort 587)
   auth: {
